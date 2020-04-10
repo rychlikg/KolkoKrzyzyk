@@ -8,18 +8,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.lang.Math;
+import android.os.Bundle;
 
-public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnClickListener {
-
+public class Bot extends AppCompatActivity implements View.OnClickListener {
     boolean kolkoPierwsze = true;
     boolean pierwszaGra = true;
+    boolean graczKolko;
+    String znak = "";
+    int zmienna = 0;
 
     int kolko = 0;
     int krzyzyk = 0;
     int ruch = 0;
 
-    TextView kolkowynik;
-    TextView krzyzykwynik;
+    TextView gracz;
+    TextView bot;
 
     Button pole00;
     Button pole01;
@@ -31,17 +35,13 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
     Button pole21;
     Button pole22;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dwuch_graczy_jeden_ekran);
-        ktoPierwszy();
+        setContentView(R.layout.activity_bot);
 
-        kolkowynik = findViewById(R.id.kolkowynik);
-        krzyzykwynik = findViewById(R.id.krzyzykwynik);
-
+        gracz = findViewById(R.id.graczWynik);
+        bot = findViewById(R.id.botWynik);
         pole00 = findViewById(R.id.pole00);
         pole00.setOnClickListener(this);
         pole01 = findViewById(R.id.pole01);
@@ -61,6 +61,91 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
         pole22 = findViewById(R.id.pole22);
         pole22.setOnClickListener(this);
 
+        int wybor = getIntent().getIntExtra("wybor",1);
+        if(wybor == 1) {
+            graczKolko = true;
+        }else if (wybor == 2) {
+            graczKolko = false;
+        }
+        ktoPierwszy();
+    }
+
+    public void ruchBota() {
+
+        boolean wolne = false;
+        if (graczKolko) {
+            znak = "X";
+        }
+        else {
+            znak = "O";
+        }
+        if (ruch == 0) {
+            zmienna = (int) (Math.random() * 9) + 1;
+
+            if (zmienna == 1)
+                pole00.setText(znak);
+            else if (zmienna == 2)
+                pole01.setText(znak);
+            else if (zmienna == 3)
+                pole02.setText(znak);
+            else if (zmienna == 4)
+                pole10.setText(znak);
+            else if (zmienna == 5)
+                pole11.setText(znak);
+            else if (zmienna == 6)
+                pole12.setText(znak);
+            else if (zmienna == 7)
+                pole20.setText(znak);
+            else if (zmienna == 8)
+                pole21.setText(znak);
+            else if (zmienna == 9)
+                pole22.setText(znak);
+
+        }
+        else{
+            while (!wolne){
+                zmienna = (int) (Math.random() * 9) + 1;
+                if (zmienna == 1 && pole00.getText().equals("")){
+                    pole00.setText(znak);
+                    wolne = true;
+                }
+                else if (zmienna == 2 && pole01.getText().equals("")){
+                    pole01.setText(znak);
+                    wolne = true;
+                }
+                else if (zmienna == 3 && pole02.getText().equals("")){
+                    pole02.setText(znak);
+                    wolne = true;
+                }
+                else if (zmienna == 4 && pole10.getText().equals("")){
+                    pole10.setText(znak);
+                    wolne = true;
+                }
+                else if (zmienna == 5 && pole11.getText().equals("")){
+                    pole11.setText(znak);
+                    wolne = true;
+                }
+                else if (zmienna == 6 && pole12.getText().equals("")){
+                    pole12.setText(znak);
+                    wolne = true;
+                }
+                else if (zmienna == 7 && pole20.getText().equals("")){
+                    pole20.setText(znak);
+                    wolne = true;
+                }
+                else if (zmienna == 8 && pole21.getText().equals("")){
+                    pole21.setText(znak);
+                    wolne = true;
+                }
+                else if (zmienna == 9 && pole22.getText().equals("")){
+                    pole22.setText(znak);
+                    wolne = true;
+                }
+
+            }
+        }
+        ruch++;
+       // czyWygrana();
     }
 
     public void onClick(View view)
@@ -76,13 +161,13 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
             ((Button) view).setText("O");
             if(czyWygrana()){
                 nowaGra();
-            }else kolkoPierwsze = false;
-
+            } else ruchBota();
         }else {
             ((Button) view).setText("X");
             if(czyWygrana()){
                 nowaGra();
-            } else kolkoPierwsze = true;
+            }
+            else ruchBota();
 
         }
         if(ruch == 9)
@@ -92,7 +177,7 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
     }
 
     public void remis(){
-            Toast.makeText(this, "Remis", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Remis", Toast.LENGTH_SHORT).show();
         try {
             synchronized(this){
                 wait(3000);
@@ -100,7 +185,7 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
         }
         catch(InterruptedException ex){
         }
-            nowaGra();
+        nowaGra();
     }
     public void nowaGra()
     {
@@ -123,23 +208,36 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
             if (kolkoPierwsze) {
                 Toast.makeText(getApplicationContext(), "Kólko wygrywa", Toast.LENGTH_SHORT).show();
                 kolko++;
-                kolkowynik.setText(String.valueOf(kolko));
+                if(graczKolko) {
+                    gracz.setText(String.valueOf(kolko));
+                }
+                else bot.setText((String.valueOf(kolko)));
+
             } else {
                 Toast.makeText(getApplicationContext(), "Krzyżyk wygrywa", Toast.LENGTH_SHORT).show();
                 krzyzyk++;
-                krzyzykwynik.setText(String.valueOf(krzyzyk));
+                if(graczKolko){
+                    bot.setText(String.valueOf(krzyzyk));
+                }
+                else gracz.setText(String.valueOf(krzyzyk));
             }
             return true;
         }
-       if(pole10.getText() != "" && pole10.getText().equals(pole11.getText())&& pole10.getText().equals(pole12.getText())) {
+        if(pole10.getText() != "" && pole10.getText().equals(pole11.getText())&& pole10.getText().equals(pole12.getText())) {
             if (kolkoPierwsze) {
                 Toast.makeText(getApplicationContext(), "Kólko wygrywa", Toast.LENGTH_SHORT).show();
                 kolko++;
-                kolkowynik.setText(String.valueOf(kolko));
+                if(graczKolko) {
+                    gracz.setText(String.valueOf(kolko));
+                }
+                else bot.setText((String.valueOf(kolko)));
             } else {
                 Toast.makeText(getApplicationContext(), "Krzyżyk wygrywa", Toast.LENGTH_SHORT).show();
                 krzyzyk++;
-                krzyzykwynik.setText(String.valueOf(krzyzyk));
+                if(graczKolko){
+                    bot.setText(String.valueOf(krzyzyk));
+                }
+                else gracz.setText(String.valueOf(krzyzyk));
             }
             return true;
         }
@@ -147,11 +245,17 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
             if (kolkoPierwsze) {
                 Toast.makeText(getApplicationContext(), "Kólko wygrywa", Toast.LENGTH_SHORT).show();
                 kolko++;
-                kolkowynik.setText(String.valueOf(kolko));
+                if(graczKolko) {
+                    gracz.setText(String.valueOf(kolko));
+                }
+                else bot.setText((String.valueOf(kolko)));
             } else {
                 Toast.makeText(getApplicationContext(), "Krzyżyk wygrywa", Toast.LENGTH_SHORT).show();
                 krzyzyk++;
-                krzyzykwynik.setText(String.valueOf(krzyzyk));
+                if(graczKolko){
+                    bot.setText(String.valueOf(krzyzyk));
+                }
+                else gracz.setText(String.valueOf(krzyzyk));
             }
             //return true;
         }
@@ -159,11 +263,17 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
             if (kolkoPierwsze) {
                 Toast.makeText(getApplicationContext(), "Kólko wygrywa", Toast.LENGTH_SHORT).show();
                 kolko++;
-                kolkowynik.setText(String.valueOf(kolko));
+                if(graczKolko) {
+                    gracz.setText(String.valueOf(kolko));
+                }
+                else bot.setText((String.valueOf(kolko)));
             } else {
                 Toast.makeText(getApplicationContext(), "Krzyżyk wygrywa", Toast.LENGTH_SHORT).show();
                 krzyzyk++;
-                krzyzykwynik.setText(String.valueOf(krzyzyk));
+                if(graczKolko){
+                    bot.setText(String.valueOf(krzyzyk));
+                }
+                else gracz.setText(String.valueOf(krzyzyk));
             }
             return true;
         }
@@ -171,11 +281,17 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
             if (kolkoPierwsze) {
                 Toast.makeText(getApplicationContext(), "Kólko wygrywa", Toast.LENGTH_SHORT).show();
                 kolko++;
-                kolkowynik.setText(String.valueOf(kolko));
+                if(graczKolko) {
+                    gracz.setText(String.valueOf(kolko));
+                }
+                else bot.setText((String.valueOf(kolko)));
             } else {
                 Toast.makeText(getApplicationContext(), "Krzyżyk wygrywa", Toast.LENGTH_SHORT).show();
                 krzyzyk++;
-                krzyzykwynik.setText(String.valueOf(krzyzyk));
+                if(graczKolko){
+                    bot.setText(String.valueOf(krzyzyk));
+                }
+                else gracz.setText(String.valueOf(krzyzyk));
             }
             return true;
         }
@@ -183,11 +299,17 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
             if (kolkoPierwsze) {
                 Toast.makeText(getApplicationContext(), "Kólko wygrywa", Toast.LENGTH_SHORT).show();
                 kolko++;
-                kolkowynik.setText(String.valueOf(kolko));
+                if(graczKolko) {
+                    gracz.setText(String.valueOf(kolko));
+                }
+                else bot.setText((String.valueOf(kolko)));
             } else {
                 Toast.makeText(getApplicationContext(), "Krzyżyk wygrywa", Toast.LENGTH_SHORT).show();
                 krzyzyk++;
-                krzyzykwynik.setText(String.valueOf(krzyzyk));
+                if(graczKolko){
+                    bot.setText(String.valueOf(krzyzyk));
+                }
+                else gracz.setText(String.valueOf(krzyzyk));
             }
             return true;
         }
@@ -195,11 +317,17 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
             if (kolkoPierwsze) {
                 Toast.makeText(getApplicationContext(), "Kólko wygrywa", Toast.LENGTH_SHORT).show();
                 kolko++;
-                kolkowynik.setText(String.valueOf(kolko));
+                if(graczKolko) {
+                    gracz.setText(String.valueOf(kolko));
+                }
+                else bot.setText((String.valueOf(kolko)));
             } else {
                 Toast.makeText(getApplicationContext(), "Krzyżyk wygrywa", Toast.LENGTH_SHORT).show();
                 krzyzyk++;
-                krzyzykwynik.setText(String.valueOf(krzyzyk));
+                if(graczKolko){
+                    bot.setText(String.valueOf(krzyzyk));
+                }
+                else gracz.setText(String.valueOf(krzyzyk));
             }
             return true;
 
@@ -208,36 +336,54 @@ public class DwuchGraczyJedenEkran extends AppCompatActivity implements View.OnC
             if (kolkoPierwsze) {
                 Toast.makeText(getApplicationContext(), "Kólko wygrywa", Toast.LENGTH_SHORT).show();
                 kolko++;
-                kolkowynik.setText(String.valueOf(kolko));
+                if(graczKolko) {
+                    gracz.setText(String.valueOf(kolko));
+                }
+                else bot.setText((String.valueOf(kolko)));
             } else {
                 Toast.makeText(getApplicationContext(), "Krzyżyk wygrywa", Toast.LENGTH_SHORT).show();
                 krzyzyk++;
-                krzyzykwynik.setText(String.valueOf(krzyzyk));
+                if(graczKolko){
+                    bot.setText(String.valueOf(krzyzyk));
+                }
+                else gracz.setText(String.valueOf(krzyzyk));
             }
-           return true;
+            return true;
         }
         return false;
     }
 
     public void ktoPierwszy(){
         if(pierwszaGra == true)
-       {
+        {
             int i = (int)Math.random()*2+1;
             if(i == 1){
                 Toast.makeText(getApplicationContext(),"Kółko zaczyna",Toast.LENGTH_SHORT).show();
-                kolkoPierwsze = true;
+                kolkoPierwsze = false;
+                if(!graczKolko) {
+                    ruchBota();
+                }
             }
             if(i == 2){
                 Toast.makeText(getApplicationContext(),"Krzyżyk zaczyna",Toast.LENGTH_SHORT).show();
-                kolkoPierwsze = false;
+                kolkoPierwsze = true;
+                if(graczKolko) {
+                    ruchBota();
+                }
             }
             pierwszaGra = false;
         }else if (kolkoPierwsze){
             kolkoPierwsze = false;
             Toast.makeText(getApplicationContext(),"Krzyżyk zaczyna",Toast.LENGTH_SHORT).show();
+            if(graczKolko) {
+                ruchBota();
+            }
         } else {
             Toast.makeText(getApplicationContext(),"Kółko zaczyna",Toast.LENGTH_SHORT).show();
             kolkoPierwsze = true;
+            if(!graczKolko) {
+                ruchBota();
+            }
         }
     }
 

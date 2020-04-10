@@ -19,6 +19,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(this, DwuchGraczyJedenEkran.class);
         startActivity(intent);
     }
+    public void Bot (View view)
+    {
+        Intent intent = new Intent(this, wyborFigury.class);
+        startActivity(intent);
+    }
     public void onClick(View view)
     {
 
